@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+.streamlit/secrets.toml
+.env
+.env.*
+!.env.example
+*.log
+data/private/*
+!data/private/.gitkeep
+docs/originales/*
+!docs/originales/.gitkeep
+.DS_Store
+Thumbs.db
+
+# Notas internas de trabajo; la entrega pública está documentada en docs/.
+docs/superpowers/
+docs/DASHBOARD.md
+docs/VALIDACION.md

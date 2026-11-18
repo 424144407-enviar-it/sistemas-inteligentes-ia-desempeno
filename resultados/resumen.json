@@ -1,0 +1,468 @@
+{
+  "muestra": {
+    "ia": 24,
+    "bienestar": 19,
+    "emparejados": 19,
+    "solo_ia": 5,
+    "solo_bienestar": 0
+  },
+  "descriptivos": {
+    "horas_ia_dia": {
+      "n": 24,
+      "media": 1.90625,
+      "mediana": 1.5,
+      "sd": 1.8246355767447662,
+      "min": 0.08333333333333333,
+      "max": 8.0,
+      "q1": 1.0,
+      "q3": 2.0
+    },
+    "semestre_inicio": {
+      "n": 24,
+      "media": 3.2083333333333335,
+      "mediana": 3.0,
+      "sd": 1.2846642825425558,
+      "min": 1.0,
+      "max": 6.0,
+      "q1": 2.75,
+      "q3": 4.0
+    },
+    "total_herramientas": {
+      "n": 24,
+      "media": 1.75,
+      "mediana": 2.0,
+      "sd": 0.8469895538599198,
+      "min": 1.0,
+      "max": 4.0,
+      "q1": 1.0,
+      "q3": 2.0
+    },
+    "score_beneficio_ia": {
+      "n": 24,
+      "media": 0.13567956349206348,
+      "mediana": 0.15416666666666667,
+      "sd": 0.14255036712151148,
+      "min": -0.14583333333333331,
+      "max": 0.5854761904761905,
+      "q1": 0.0625,
+      "q3": 0.19374999999999998
+    },
+    "edad": {
+      "n": 19,
+      "media": 22.157894736842106,
+      "mediana": 22.0,
+      "sd": 1.302269723501448,
+      "min": 21.0,
+      "max": 25.0,
+      "q1": 21.0,
+      "q3": 23.0
+    },
+    "traslado_min": {
+      "n": 19,
+      "media": 70.52631578947368,
+      "mediana": 60.0,
+      "sd": 75.698501688572,
+      "min": 10.0,
+      "max": 360.0,
+      "q1": 35.0,
+      "q3": 75.0
+    },
+    "score_bienestar": {
+      "n": 19,
+      "media": -0.001754385964912276,
+      "mediana": 0.0,
+      "sd": 0.13447368103159976,
+      "min": -0.3,
+      "max": 0.2,
+      "q1": -0.1,
+      "q3": 0.1
+    }
+  },
+  "tipo_uso": {
+    "Híbrido": 13,
+    "Guía": 7,
+    "Atajo": 2,
+    "Contextual": 1,
+    "No clasificable": 1
+  },
+  "reemplazo": {
+    "No": 11,
+    "Sí": 8,
+    "Parcial / Depende": 4,
+    "Indeciso": 1
+  },
+  "herramientas": {
+    "chatgpt": 11,
+    "gemini": 15,
+    "deepseek": 3,
+    "claude": 8,
+    "copilot": 2,
+    "qwen": 1,
+    "notebooklm": 2,
+    "perplexity": 0
+  },
+  "semestre_inicio": {
+    "1": 3,
+    "2": 3,
+    "3": 8,
+    "4": 7,
+    "5": 2,
+    "6": 1
+  },
+  "kpis": {
+    "adopcion_observada_n": 24,
+    "adopcion_observada_pct": 100.0,
+    "mediana_ia_h": 1.5,
+    "guia_hibrido_pct": 83.33333333333333,
+    "hibrido_pct": 54.166666666666664,
+    "multiherramienta_pct": 54.166666666666664,
+    "multiherramienta_n": 13,
+    "traslado_mediana_min": 60.0,
+    "traslado_mayor_90_n": 2,
+    "reemplazo_si_pct": 33.33333333333333
+  },
+  "calidad": {
+    "numericas_ia_sin_parsear": {
+      "horas_ia_dia": 0,
+      "semestre_inicio": 0
+    },
+    "numericas_bie_sin_parsear": {
+      "edad": 0,
+      "traslado_min": 0
+    },
+    "textos_ia_ausentes": 2,
+    "bienestar_no_observado": 5
+  },
+  "correlacion_traslado_ia": {
+    "n": 19,
+    "rho": 0.13747782340255096,
+    "p": 0.5746301315216433
+  },
+  "correlacion_spearman": {
+    "horas_ia_dia": {
+      "horas_ia_dia": 1.0,
+      "semestre_inicio": 0.0338851851289428,
+      "total_herramientas": 0.41126224805058614,
+      "traslado_min": 0.137477823402551,
+      "score_beneficio_ia": 0.02364201576437108,
+      "score_bienestar": -0.006865437954763622,
+      "edad": -0.3447762542269346
+    },
+    "semestre_inicio": {
+      "horas_ia_dia": 0.0338851851289428,
+      "semestre_inicio": 1.0,
+      "total_herramientas": 0.10453541323924606,
+      "traslado_min": -0.4706350863593813,
+      "score_beneficio_ia": 0.16386480091746608,
+      "score_bienestar": -0.11301529697687214,
+      "edad": 0.2849078538941283
+    },
+    "total_herramientas": {
+      "horas_ia_dia": 0.41126224805058614,
+      "semestre_inicio": 0.10453541323924606,
+      "total_herramientas": 1.0,
+      "traslado_min": -0.2318446382173263,
+      "score_beneficio_ia": -0.2326960526428278,
+      "score_bienestar": 0.14305931196234212,
+      "edad": -0.12792959413231406
+    },
+    "traslado_min": {
+      "horas_ia_dia": 0.137477823402551,
+      "semestre_inicio": -0.4706350863593813,
+      "total_herramientas": -0.2318446382173263,
+      "traslado_min": 1.0,
+      "score_beneficio_ia": 0.024153756602725902,
+      "score_bienestar": -0.2157034733307957,
+      "edad": -0.4481157415222806
+    },
+    "score_beneficio_ia": {
+      "horas_ia_dia": 0.02364201576437108,
+      "semestre_inicio": 0.16386480091746608,
+      "total_herramientas": -0.2326960526428278,
+      "traslado_min": 0.024153756602725902,
+      "score_beneficio_ia": 1.0,
+      "score_bienestar": 0.06542532617663738,
+      "edad": -0.13484762156647526
+    },
+    "score_bienestar": {
+      "horas_ia_dia": -0.006865437954763622,
+      "semestre_inicio": -0.11301529697687214,
+      "total_herramientas": 0.14305931196234212,
+      "traslado_min": -0.2157034733307957,
+      "score_beneficio_ia": 0.06542532617663738,
+      "score_bienestar": 1.0,
+      "edad": -0.13267430621901347
+    },
+    "edad": {
+      "horas_ia_dia": -0.3447762542269346,
+      "semestre_inicio": 0.2849078538941283,
+      "total_herramientas": -0.12792959413231406,
+      "traslado_min": -0.4481157415222806,
+      "score_beneficio_ia": -0.13484762156647526,
+      "score_bienestar": -0.13267430621901347,
+      "edad": 1.0
+    }
+  },
+  "tfidf_top": {
+    "rapido": 0.13683320681723854,
+    "tiempo": 0.1288831823268573,
+    "menos": 0.1260451522669001,
+    "informacion": 0.11770736495327593,
+    "temas": 0.11736059330848202,
+    "ayuda": 0.11551795714193751,
+    "resolver": 0.11038392471025785,
+    "pero": 0.10954066666278393,
+    "redaccion": 0.10722593351730701,
+    "investigacion": 0.10567265593938077
+  },
+  "polaridad_por_pregunta": {
+    "fase_estudio": {
+      "n": 24,
+      "media": 0.05555555555555555,
+      "n_score_cero": 18
+    },
+    "cambio_estudio": {
+      "n": 24,
+      "media": 0.2708333333333333,
+      "n_score_cero": 12
+    },
+    "proceso_verificacion": {
+      "n": 24,
+      "media": 0.048611111111111105,
+      "n_score_cero": 22
+    },
+    "impacto_tiempo": {
+      "n": 24,
+      "media": 0.2222222222222222,
+      "n_score_cero": 13
+    },
+    "diferencia_calificaciones": {
+      "n": 23,
+      "media": 0.16666666666666669,
+      "n_score_cero": 14
+    },
+    "independencia_resolucion": {
+      "n": 24,
+      "media": -0.031249999999999997,
+      "n_score_cero": 12
+    },
+    "impacto_estres": {
+      "n": 24,
+      "media": 0.23214285714285712,
+      "n_score_cero": 9
+    },
+    "reglas_personales": {
+      "n": 24,
+      "media": 0.09027777777777778,
+      "n_score_cero": 17
+    },
+    "pensamiento_critico": {
+      "n": 23,
+      "media": 0.02463768115942028,
+      "n_score_cero": 12
+    },
+    "motivo_principal": {
+      "n": 24,
+      "media": 0.2972222222222222,
+      "n_score_cero": 11
+    },
+    "ambiente_hogar": {
+      "n": 19,
+      "media": 0.3508771929824561,
+      "n_score_cero": 6
+    },
+    "calidad_sueno": {
+      "n": 19,
+      "media": -0.14035087719298245,
+      "n_score_cero": 6
+    },
+    "frecuencia_desanimo": {
+      "n": 19,
+      "media": -0.02631578947368421,
+      "n_score_cero": 18
+    },
+    "irritabilidad": {
+      "n": 19,
+      "media": -0.02631578947368421,
+      "n_score_cero": 14
+    },
+    "dificultad_concentracion": {
+      "n": 19,
+      "media": -0.16666666666666666,
+      "n_score_cero": 11
+    }
+  },
+  "supervisado": {
+    "estado": "ok",
+    "objetivo": "Modalidad declarada mixta (1) frente a exclusiva: guía o atajo (0).",
+    "n_etiquetados": 22,
+    "n_excluidos": 2,
+    "clases": {
+      "mixta": 13,
+      "exclusiva": 9
+    },
+    "n_train": 16,
+    "n_test": 6,
+    "n_folds": 5,
+    "clases_train": {
+      "1": 9,
+      "0": 7
+    },
+    "clases_test": {
+      "1": 4,
+      "0": 2
+    },
+    "cv": [
+      {
+        "modelo": "Baseline (mayoría)",
+        "cv_accuracy": 0.5666666666666667,
+        "cv_accuracy_sd": 0.14907119849998596,
+        "cv_f1": 0.7133333333333333,
+        "cv_f1_sd": 0.13249737942901196,
+        "fold_f1": [
+          0.6666666666666666,
+          0.8,
+          0.8,
+          0.8,
+          0.5
+        ]
+      },
+      {
+        "modelo": "Regresión logística",
+        "cv_accuracy": 0.6333333333333333,
+        "cv_accuracy_sd": 0.2472066162365221,
+        "cv_f1": 0.6266666666666667,
+        "cv_f1_sd": 0.3759432581299116,
+        "fold_f1": [
+          0.6666666666666666,
+          0.6666666666666666,
+          0.8,
+          0.0,
+          1.0
+        ]
+      },
+      {
+        "modelo": "SVM",
+        "cv_accuracy": 0.4333333333333333,
+        "cv_accuracy_sd": 0.14907119849998596,
+        "cv_f1": 0.49333333333333335,
+        "cv_f1_sd": 0.3031318011837242,
+        "fold_f1": [
+          0.6666666666666666,
+          0.5,
+          0.8,
+          0.0,
+          0.5
+        ]
+      },
+      {
+        "modelo": "Random Forest",
+        "cv_accuracy": 0.36666666666666664,
+        "cv_accuracy_sd": 0.2472066162365221,
+        "cv_f1": 0.4666666666666666,
+        "cv_f1_sd": 0.27386127875258304,
+        "fold_f1": [
+          0.6666666666666666,
+          0.0,
+          0.5,
+          0.6666666666666666,
+          0.5
+        ]
+      },
+      {
+        "modelo": "KNN",
+        "cv_accuracy": 0.4333333333333333,
+        "cv_accuracy_sd": 0.27888667551135854,
+        "cv_f1": 0.42666666666666664,
+        "cv_f1_sd": 0.39327683210007003,
+        "fold_f1": [
+          0.6666666666666666,
+          0.0,
+          0.8,
+          0.0,
+          0.6666666666666666
+        ]
+      }
+    ],
+    "seleccionado": "Regresión logística",
+    "supera_baseline_cv": false,
+    "seleccion": "Mayor F1 medio de CV solo en entrenamiento; desempate por accuracy y menor dispersión.",
+    "test": {
+      "accuracy": 0.8333333333333334,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.8888888888888888,
+      "confusion": [
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    "baseline_test": {
+      "accuracy": 0.6666666666666666,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1": 0.8,
+      "confusion": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    "test_sensible_pp": 16.666666666666668
+  },
+  "clusters": {
+    "estado": "ok",
+    "n": 19,
+    "k": 2,
+    "silhouette": 0.36028906079671436,
+    "siluetas": {
+      "2": 0.36028906079671436,
+      "3": 0.13413564372214082,
+      "4": 0.1405533033855768,
+      "5": 0.1399615774922359
+    },
+    "silhouette_jerarquico": 0.35353114152430737,
+    "pca_varianza": [
+      0.2604200762212247,
+      0.23422891279524374
+    ],
+    "tamanos": {
+      "0": 18,
+      "1": 1
+    },
+    "perfiles_n_min_3": {},
+    "limite": "Exploratorio; perfiles con grupo o complemento n<3 omitidos. Grupos no son diagnósticos."
+  },
+  "metodologia": {
+    "version": "2.0.0",
+    "semilla": 42,
+    "polaridad": "Media por pregunta; lexicón contextual con negación. No validado como escala académica o clínica.",
+    "faltantes": "Textos ausentes no inventados; bienestar sin encuesta = nulo; KNN solo dentro del pipeline supervisado.",
+    "alcance": "Muestra encuestada, sin inferencia causal ni medición objetiva de rendimiento."
+  },
+  "proveniencia": {
+    "fecha": "2026-11-17T22:29:13-06:00",
+    "fuentes": {
+      "Desempeño académico por el uso de IA (Respuestas).xlsx": "c3b78b430a6677c93fb4312b89f061f991f9cbdd5497b30ab583716f9cc48f14",
+      "Cuestionario_ Entorno Universitario y Bienestar.csv": "ffe2b8d0d2283a5e051c8de1bb6f256e85bcb451b8f651b6cebf70d96e879b27"
+    },
+    "versiones": {
+      "pandas": "2.2.3",
+      "numpy": "2.2.6",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.15.3",
+      "matplotlib": "3.10.7"
+    }
+  }
+}

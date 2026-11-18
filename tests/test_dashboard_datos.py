@@ -1,0 +1,84 @@
+import importlib.util
+import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import unittest
+
+ROOT=Path(__file__).resolve().parents[1]
+
+
+class DashboardDatosTest(unittest.TestCase):
+    def api(self):
+        self.assertIsNotNone(importlib.util.find_spec('dashboard_datos'),'Falta el adaptador de agregados')
+        import dashboard_datos
+        return dashboard_datos
+
+    def test_porcentaje_de_herramientas_conserva_denominador(self):
+        a=self.api()
+        r=json.loads((ROOT/'resultados'/'resumen.json').read_text(encoding='utf-8'))
+        df=a.tabla_herramientas(r,['gemini'])
+        self.assertEqual(len(df),1)
+        self.assertAlmostEqual(df.iloc[0]['Porcentaje'],100*r['herramientas']['gemini']/r['muestra']['ia'])
+        self.assertEqual(len(a.tabla_herramientas(r,[])),0)
+
+    def test_cargador_rechaza_datos_individuales(self):
+        a=self.api()
+        r=json.loads((ROOT/'resultados'/'resumen.json').read_text(encoding='utf-8'))
+        r['extra']={'cuenta':'111111111'}
+        with TemporaryDirectory() as d:
+            p=Path(d)/'resumen.json'
+            p.write_text(json.dumps(r),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'individual'):
+                a.leer_resumen(p)
+
+    def test_cargador_valida_cobertura_y_totales(self):
+        a=self.api()
+        r=json.loads((ROOT/'resultados'/'resumen.json').read_text(encoding='utf-8'))
+        r['muestra']['emparejados']=r['muestra']['ia']+1
+        with TemporaryDirectory() as d:
+            p=Path(d)/'resumen.json'
+            p.write_text(json.dumps(r),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'muestra'):
+                a.leer_resumen(p)
+
+    def test_documentos_solo_devuelve_archivos_corregidos(self):
+        a=self.api()
+        docs=a.documentos_publicos(ROOT)
+        self.assertEqual(set(docs),{'tecnica','negocio'})
+        for p in docs.values():
+            self.assertIn('actualizados',p.parts)
+            self.assertTrue(p.read_bytes().startswith(b'%PDF'))
+
+    def test_resumen_incompleto_falla_con_mensaje(self):
+        a=self.api()
+        r=json.loads((ROOT/'resultados'/'resumen.json').read_text(encoding='utf-8'))
+        del r['kpis']['mediana_ia_h']
+        with TemporaryDirectory() as d:
+            p=Path(d)/'resumen.json';p.write_text(json.dumps(r),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'incompleto|esquema'):
+                a.leer_resumen(p)
+
+    def test_exportacion_excluye_campos_ajenos_a_descriptivos(self):
+        a=self.api()
+        r=json.loads((ROOT/'resultados'/'resumen.json').read_text(encoding='utf-8'))
+        r['descriptivos']['traslado_min']['comentario_privado']='Contenido que no debe salir'
+        r['descriptivos']['otro_registro']={'media':3,'comentario':'No es parte del resumen'}
+        with TemporaryDirectory() as d:
+            p=Path(d)/'resumen.json';p.write_text(json.dumps(r),encoding='utf-8')
+            limpio=a.leer_resumen(p)
+            self.assertNotIn('comentario_privado',limpio['descriptivos']['traslado_min'])
+            self.assertNotIn('otro_registro',limpio['descriptivos'])
+
+    def test_campo_de_conteos_mal_formado_no_expone_excepcion_interna(self):
+        a=self.api()
+        r=json.loads((ROOT/'resultados'/'resumen.json').read_text(encoding='utf-8'))
+        r['herramientas']=None
+        with TemporaryDirectory() as d:
+            p=Path(d)/'resumen.json';p.write_text(json.dumps(r),encoding='utf-8')
+            try:a.leer_resumen(p)
+            except ValueError:pass
+            except Exception as e:self.fail(f'La estructura inválida deja escapar {type(e).__name__}')
+            else:self.fail('La estructura inválida fue aceptada')
+
+
+if __name__=='__main__':unittest.main()

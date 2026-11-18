@@ -1,0 +1,2 @@
+# Compatibilidad con el nombre anterior. La dependencia de despliegue es requirements.txt.
+-r requirements.txt
