@@ -22,4 +22,4 @@ Con seis casos de prueba, una sola predicción cambia accuracy en 16.7 puntos po
 
 ## Reproducibilidad
 
-`resultados/resumen.json` registra la semilla, las versiones y los hashes de las fuentes. El notebook, las figuras, el dashboard y los PDF usan el mismo análisis. Las encuestas y los PDF originales son necesarios solo para recalcular o regenerar los informes, no para consultar o desplegar el panel.
+`resultados/resumen.json` registra la semilla, las versiones y los hashes de las fuentes. El notebook, las figuras, el dashboard y los PDF usan el mismo análisis. Las encuestas y los PDF originales son necesarios solo para recalcular o regenerar los informes; el tablero permite consultar los agregados incluidos en esta entrega.

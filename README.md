@@ -1,101 +1,105 @@
-# IA en contexto · Sistemas Inteligentes
+# Uso de inteligencia artificial y desempeño académico
 
-Dashboard sobre el uso de IA y el entorno universitario en MAC. Reúne 24 respuestas sobre IA y 19 sobre entorno y bienestar. Incluye los resultados agregados, el notebook y los dos informes corregidos.
+**Proyecto de Sistemas Inteligentes · MAC**
 
-El panel ya tiene los resultados necesarios para funcionar: **no necesita las encuestas privadas para desplegarse**.
+Este proyecto estudia cómo un grupo de estudiantes incorpora herramientas de inteligencia artificial a sus actividades académicas y cómo describe su entorno universitario. Reúne el análisis de dos cuestionarios, un tablero interactivo y los informes técnico y de negocio.
 
-## Abrir en tu computadora
+El interés está en conocer para qué se usa la IA, qué herramientas aparecen con mayor frecuencia y qué beneficios o dificultades perciben quienes respondieron. El desempeño académico se aborda desde esas percepciones: las encuestas no incluyen una medición objetiva de calificaciones o aprendizaje.
 
-Usa Python 3.12 y ejecuta desde esta carpeta:
+## Objetivo
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m streamlit run dashboard.py --server.address 127.0.0.1
-```
+Explorar los hábitos de uso de IA y su relación con el contexto académico mediante análisis descriptivo, procesamiento de lenguaje natural y modelos de aprendizaje automático. Los resultados se presentan en gráficas y documentos que permiten revisar tanto los hallazgos como sus límites.
 
-En Linux o macOS:
+## Datos utilizados
 
-```bash
-python3.12 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python -m streamlit run dashboard.py --server.address 127.0.0.1
-```
+Se trabajó con dos cuestionarios proporcionados para el proyecto:
 
-Abre la dirección que imprime Streamlit, normalmente `http://127.0.0.1:8501`.
+| Fuente | Formato | Respuestas | Contenido |
+| --- | --- | ---: | --- |
+| Desempeño académico por el uso de IA | Excel | 24 | Herramientas, tiempo de uso, propósitos y percepciones sobre el estudio |
+| Entorno Universitario y Bienestar | CSV | 19 | Traslado, ambiente en casa, sueño y experiencias de bienestar |
 
-## Subir y desplegar
+Los 19 registros de bienestar se emparejaron con su respuesta sobre IA. Las cinco personas sin segunda encuesta conservaron esos campos como datos ausentes. Los archivos originales contienen identificadores y se mantienen fuera de la entrega pública; el tablero utiliza resultados agregados.
 
-1. Sube **el contenido de esta carpeta** a la raíz de tu repositorio de GitHub. Incluye `.streamlit`, `assets`, `resultados` y `docs/actualizados`.
-2. En [Streamlit Community Cloud](https://share.streamlit.io/), crea una app y elige ese repositorio y su rama.
-3. En **Main file path**, escribe `dashboard.py`.
-4. En **Advanced settings**, selecciona **Python 3.12** y despliega.
+## Herramientas y técnicas
 
-`requirements.txt` instala el dashboard. La configuración de esta entrega permite que el proveedor configure el servidor; no fija una dirección de red local.
+| Herramienta | Uso en el proyecto |
+| --- | --- |
+| Python y Jupyter Notebook | Desarrollo y presentación del análisis |
+| pandas y NumPy | Limpieza, transformación y resumen de los datos |
+| scikit-learn | TF-IDF, imputación, escalamiento, PCA, clasificación y agrupamiento |
+| SciPy | Correlación de Spearman y análisis estadístico |
+| Matplotlib y WordCloud | Figuras del estudio y exploración de términos |
+| Streamlit y Altair | Tablero interactivo y visualización de resultados |
+| ReportLab y pypdf | Elaboración de los informes, conservando las portadas originales |
+| unittest y Streamlit AppTest | Comprobación del análisis y del tablero |
 
-Consulta [la guía de despliegue](docs/DESPLIEGUE.md) si necesitas más detalle. Esta carpeta está preparada para desplegar; no incluye una publicación ya realizada.
+Se compararon regresión logística, SVM, Random Forest y KNN con una referencia que predice siempre la clase mayoritaria. También se exploraron agrupaciones mediante K-Means y clustering jerárquico.
 
-## Qué contiene
+## Desarrollo del análisis
 
-```text
-dashboard.py                     Aplicación Streamlit
-dashboard_datos.py               Lectura y validación de agregados
-.streamlit/config.toml           Apariencia y configuración
-assets/                         Estilos del panel
-resultados/                     Resumen JSON, tablas y figuras
-docs/actualizados/              Los dos PDF corregidos
-Analisis_IA_Desempeno_MAC_Cuestionarios.ipynb
-analisis.py                     Limpieza, NLP y evaluación
-visualizaciones.py              Figuras del estudio
-reportes.py                     Generación de los PDF
-verificar_notebook.py           Ejecución y comprobación del notebook
-tests/                          Pruebas del análisis y el panel
-requirements.txt                Dependencias del dashboard
-requirements-analysis.txt       Dependencias opcionales del análisis y PDF
-requirements-dev.txt            Dependencias para todas las pruebas y el notebook
-```
+1. **Preparación de las fuentes.** Validación de columnas y registros únicos, cruce de cuestionarios y normalización de horas, traslados y nombres de herramientas.
+2. **Análisis descriptivo.** Revisión de frecuencias, porcentajes, medianas y distribuciones, manteniendo la base de cada encuesta.
+3. **Análisis de texto.** Extracción de términos con TF-IDF y cálculo de polaridad léxica con tratamiento de negaciones. Este indicador describe el lenguaje y no constituye una escala clínica o académica.
+4. **Clasificación supervisada.** Distinción entre uso declarado mixto y uso exclusivo como guía o atajo. La pregunta que define la etiqueta se excluyó de los predictores. Se usaron 16 casos de entrenamiento, validación cruzada de cinco pliegues y seis casos reservados para prueba.
+5. **Exploración del entorno.** Correlaciones y agrupamiento con las 19 observaciones reales de bienestar, sin completar encuestas faltantes con datos inventados.
+6. **Presentación.** Integración de los resultados en el notebook, las figuras, el tablero y los dos informes.
 
-## Volver a calcular el análisis
+## Principales resultados
 
-Solo necesitas este paso si quieres cambiar las encuestas o recalcular los resultados. Primero instala las dependencias opcionales:
+| Indicador | Resultado |
+| --- | ---: |
+| Respuestas sobre uso de IA | 24 |
+| Respuestas sobre entorno y bienestar | 19 |
+| Tiempo diario de uso de IA, mediana | 1.5 horas |
+| Uso mixto: aprender y agilizar tareas | 13 de 24 (54.2 %) |
+| Uso de más de una herramienta | 13 de 24 (54.2 %) |
+| Herramienta con más menciones | Gemini: 15 de 24 |
+| Tiempo de traslado, mediana | 60 minutos |
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-analysis.txt
-```
+Las herramientas admiten varias menciones por persona, por lo que sus porcentajes no deben sumarse como categorías excluyentes.
 
-Coloca localmente los archivos `Desempeño académico por el uso de IA (Respuestas).xlsx` y `Cuestionario_ Entorno Universitario y Bienestar.csv` en `data/private/`. Después ejecuta:
+No se observó una relación clara entre el tiempo de traslado y las horas de IA en esta muestra (Spearman: rho = 0.137; p = 0.575; n = 19). En la clasificación, la referencia mayoritaria obtuvo un F1 medio de 0.713 en validación, por encima de la regresión logística (0.627). El ejercicio no ofrece evidencia suficiente para realizar predicciones individuales.
 
-```powershell
-.\.venv\Scripts\python.exe analisis.py --data-dir data/private --out resultados
-```
+![Menciones de herramientas de inteligencia artificial](resultados/figuras/herramientas.png)
 
-Para regenerar los PDF, coloca tus PDF originales en `docs/originales/`, con sus nombres originales, y ejecuta:
+## Tablero interactivo
 
-```powershell
-.\.venv\Scripts\python.exe reportes.py --referencias docs/originales --out docs/actualizados
-```
+El tablero organiza la consulta en cinco apartados:
 
-Las carpetas de datos privados y PDF originales se entregan vacías y están excluidas de Git. Los informes corregidos sí están incluidos y el dashboard permite descargarlos.
+- **Panorama:** tamaño de la muestra, indicadores generales y modalidades de uso.
+- **Uso de IA:** herramientas, inicio de uso y percepciones sobre el reemplazo profesional.
+- **Entorno y bienestar:** traslados, lenguaje de las respuestas y asociaciones exploratorias.
+- **Modelos:** comparación de clasificadores y resultados del agrupamiento.
+- **Documentación:** consulta y descarga de los informes del proyecto.
 
-## Ejecutar las pruebas
+Los controles permiten explorar los agregados disponibles. Los porcentajes de herramientas conservan como denominador las 24 respuestas; seleccionar una herramienta no reconstruye cruces individuales con bienestar.
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
-```
+## Contenido de la entrega
 
-Para probar solo el dashboard con las dependencias mínimas:
+| Archivo o carpeta | Contenido |
+| --- | --- |
+| [Notebook del análisis](Analisis_IA_Desempeno_MAC_Cuestionarios.ipynb) | Desarrollo del estudio con resultados y figuras |
+| [analisis.py](analisis.py) | Preparación de datos, análisis de texto y evaluación de modelos |
+| [dashboard.py](dashboard.py) y [dashboard_datos.py](dashboard_datos.py) | Aplicación y lectura de resultados agregados |
+| [resultados/](resultados/) | Resumen JSON, tablas CSV y gráficas |
+| [visualizaciones.py](visualizaciones.py) | Generación de figuras |
+| [reportes.py](reportes.py) | Generación de los informes PDF |
+| [verificar_notebook.py](verificar_notebook.py) | Ejecución y comprobación del notebook |
+| [tests/](tests/) | Pruebas del análisis y del tablero |
+| Archivos `requirements*.txt` | Dependencias de la aplicación, el análisis y la validación |
 
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_dashboard*.py" -v
-```
+La documentación del proyecto se encuentra en:
 
-`verificar_notebook.py` requiere las dependencias de desarrollo y tus encuestas locales. No se ejecuta durante el despliegue.
+- [Informe técnico](docs/actualizados/DOCUMENTACION_TECNICA_SI_C_CORREGIDA.pdf).
+- [Informe de negocio](docs/actualizados/DOCUMENTACION_NEGOCIO_SI_C_CORREGIDA.pdf).
+- [Metodología y alcance](docs/METODOLOGIA.md).
+- [Verificación de la entrega](docs/VERIFICACION_ENTREGA.md).
 
-## Cómo leer los resultados
+Los dos PDF conservan las portadas originales y el estilo de los documentos de referencia. El notebook, el tablero y los informes comparten los resultados de `resultados/resumen.json`.
 
-El estudio es exploratorio. Describe las respuestas de este grupo, no a toda la carrera. La clasificación distingue uso mixto de uso declarado solo como guía o atajo; no mide calificaciones, aprendizaje efectivo o dependencia.
+## Alcance y conclusiones
 
-Las ausencias de bienestar se mantienen como datos faltantes. Los porcentajes conservan su base aunque selecciones herramientas. Los modelos se comparan con una referencia mayoritaria, que en esta ejecución obtiene mejor F1 en validación. No se ofrecen predicciones individuales.
+La muestra permite describir experiencias del grupo encuestado. No representa a toda la carrera ni permite atribuir cambios en el rendimiento al uso de IA. Las respuestas ambiguas se conservan como tales, y las agrupaciones se interpretan como una exploración, sin diagnósticos ni perfiles individuales.
 
-Más detalles en [la metodología](docs/METODOLOGIA.md) y en los [informes corregidos](docs/actualizados/).
+El proyecto muestra distintas formas de integrar la IA al estudio, con un uso frecuente que combina apoyo para aprender y ahorro de tiempo. Para evaluar su efecto sobre el desempeño harían falta más participantes, mediciones académicas objetivas y un seguimiento a lo largo del tiempo.

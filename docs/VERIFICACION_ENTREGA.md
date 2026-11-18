@@ -21,4 +21,4 @@
 
 ## Alcance
 
-La estructura está preparada para Streamlit Community Cloud con entrada `dashboard.py` y Python 3.12. Se verificó la ejecución local desde esta carpeta; el despliegue real en el proveedor queda pendiente de configurar la app con el repositorio.
+Se verificó la ejecución local del tablero con Python 3.12 y los resultados agregados incluidos en esta entrega. Esta comprobación cubre el funcionamiento de la aplicación y la coherencia de sus archivos; no sustituye la revisión metodológica de los hallazgos del estudio.
