@@ -8,6 +8,22 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class DashboardDatosTest(unittest.TestCase):
+    def test_regresion_acepta_r2_negativo_y_descarta_campos_extra(self):
+        a=self.api()
+        metricas={'r2':-.245,'mae_h':.81,'rmse_h':1.04,'nota_privada':'no publicar'}
+        obj={'estado':'ok','n':24,'n_excluidos':0,'n_train':18,'n_test':6,'n_folds':5,
+             'modelos':[{'modelo':nombre,'prueba':metricas,'entrenamiento':metricas,
+                         'cv':{'r2_media':-3.1,'r2_sd':3.6,'mae_media_h':.8,'rmse_media_h':1.,'folds_r2_validos':5},
+                         'folds':[{'n':n,**metricas} for n in [4,4,4,3,3]]}
+                        for nombre in ['Regresión lineal','Referencia (media)']]}
+        limpio=a._regresion(obj)
+        self.assertEqual(limpio['modelos'][0]['prueba']['r2'],-.245)
+        self.assertNotIn('nota_privada',limpio['modelos'][0]['prueba'])
+        obj['modelos'][0]['prueba']={**metricas,'r2':None}
+        self.assertIsNone(a._regresion(obj)['modelos'][0]['prueba']['r2'])
+        obj['modelos'][0]['prueba']={**metricas,'r2':1.5}
+        with self.assertRaises(ValueError):a._regresion(obj)
+
     def api(self):
         self.assertIsNotNone(importlib.util.find_spec('dashboard_datos'),'Falta el adaptador de agregados')
         import dashboard_datos

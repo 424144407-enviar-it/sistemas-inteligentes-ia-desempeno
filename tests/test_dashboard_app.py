@@ -38,7 +38,7 @@ class DashboardAppTest(unittest.TestCase):
                 at=AppTest.from_file(str(ROOT/'dashboard.py'),default_timeout=30).run()
                 at.radio(key='vista').set_value('Modelos').run()
                 self.assertEqual(len(at.exception),0)
-                self.assertEqual(len(at.tabs),2)
+                self.assertEqual(len(at.tabs),3)
         finally:st.cache_data.clear()
 
     def test_correlacion_indeterminada_no_rompe_entorno(self):
@@ -51,6 +51,30 @@ class DashboardAppTest(unittest.TestCase):
                 at=AppTest.from_file(str(ROOT/'dashboard.py'),default_timeout=30).run()
                 at.radio(key='vista').set_value('Entorno y bienestar').run()
                 self.assertEqual(len(at.exception),0)
+        finally:st.cache_data.clear()
+
+    def test_regresion_muestra_r2_negativo_y_metricas(self):
+        at=AppTest.from_file(str(ROOT/'dashboard.py'),default_timeout=30).run()
+        at.radio(key='vista').set_value('Modelos').run()
+        self.assertEqual(len(at.exception),0)
+        self.assertIn('Regresión (R²)',[t.label for t in at.tabs])
+        tabla=next(d.value for d in at.dataframe if 'R²' in d.value.columns)
+        self.assertLess(tabla.iloc[0]['R²'],0)
+        at.segmented_control(key='metrica_regresion').set_value('MAE (horas)').run()
+        self.assertEqual(len(at.exception),0)
+
+    def test_regresion_insuficiente_no_oculta_otras_tareas(self):
+        import streamlit as st
+        r=json.loads((ROOT/'resultados/resumen.json').read_text(encoding='utf-8'))
+        r['regresion']={'estado':'insuficiente'}
+        st.cache_data.clear()
+        try:
+            with patch('dashboard_datos.leer_resumen',return_value=r):
+                at=AppTest.from_file(str(ROOT/'dashboard.py'),default_timeout=30).run()
+                at.radio(key='vista').set_value('Modelos').run()
+                self.assertEqual(len(at.exception),0)
+                self.assertEqual(len(at.tabs),3)
+                self.assertTrue(any('horas' in x.value for x in at.info))
         finally:st.cache_data.clear()
 
 

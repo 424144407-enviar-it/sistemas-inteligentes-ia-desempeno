@@ -421,6 +421,128 @@
     },
     "test_sensible_pp": 16.666666666666668
   },
+  "regresion": {
+    "n": 24,
+    "n_excluidos": 0,
+    "objetivo": "horas_ia_dia",
+    "predictores": [
+      "semestre_inicio",
+      "total_herramientas"
+    ],
+    "semilla": 42,
+    "estado": "ok",
+    "n_train": 18,
+    "n_test": 6,
+    "n_folds": 5,
+    "modelos": [
+      {
+        "modelo": "Regresión lineal",
+        "cv": {
+          "r2_media": -3.1095863558389545,
+          "r2_sd": 3.602926181703964,
+          "mae_media_h": 1.5591882510168777,
+          "rmse_media_h": 1.9831857255266088,
+          "folds_r2_validos": 5
+        },
+        "folds": [
+          {
+            "n": 4,
+            "r2": -0.38780298805089153,
+            "mae_h": 2.874041565778854,
+            "rmse_h": 3.711959448562294
+          },
+          {
+            "n": 4,
+            "r2": -0.42562509551601124,
+            "mae_h": 1.7374506486181611,
+            "rmse_h": 2.4614846446693606
+          },
+          {
+            "n": 4,
+            "r2": -7.548328745593711,
+            "mae_h": 0.9907128514056226,
+            "rmse_h": 1.0337026135205492
+          },
+          {
+            "n": 3,
+            "r2": -6.520763589963098,
+            "mae_h": 1.483291562238931,
+            "rmse_h": 1.7101875324351887
+          },
+          {
+            "n": 3,
+            "r2": -0.6654113600710623,
+            "mae_h": 0.7104446270428196,
+            "rmse_h": 0.9985943884456502
+          }
+        ],
+        "entrenamiento": {
+          "r2": 0.019773281500483297,
+          "mae_h": 1.3215612506600287,
+          "rmse_h": 1.9679150650468993
+        },
+        "prueba": {
+          "r2": -0.24455712049753697,
+          "mae_h": 0.8075356415478616,
+          "rmse_h": 1.03939632607303
+        }
+      },
+      {
+        "modelo": "Referencia (media)",
+        "cv": {
+          "r2_media": -2.351691531714934,
+          "r2_sd": 4.010988414418726,
+          "mae_media_h": 1.32239417989418,
+          "rmse_media_h": 1.7505939870640563,
+          "folds_r2_validos": 5
+        },
+        "folds": [
+          {
+            "n": 4,
+            "r2": -0.1830792907326868,
+            "mae_h": 2.604166666666667,
+            "rmse_h": 3.4272535909778763
+          },
+          {
+            "n": 4,
+            "r2": -0.16574129651860692,
+            "mae_h": 1.5,
+            "rmse_h": 2.2258482675609494
+          },
+          {
+            "n": 4,
+            "r2": -9.492346938775512,
+            "mae_h": 1.0892857142857144,
+            "rmse_h": 1.1452263389159973
+          },
+          {
+            "n": 3,
+            "r2": -0.9778571428571436,
+            "mae_h": 0.65,
+            "rmse_h": 0.8770214744615248
+          },
+          {
+            "n": 3,
+            "r2": -0.9394329896907221,
+            "mae_h": 0.7685185185185185,
+            "rmse_h": 1.0776202634039347
+          }
+        ],
+        "entrenamiento": {
+          "r2": 0.0,
+          "mae_h": 1.324074074074074,
+          "rmse_h": 1.9876645051882336
+        },
+        "prueba": {
+          "r2": -0.06422222222222196,
+          "mae_h": 0.6342592592592592,
+          "rmse_h": 0.9611472375997753
+        }
+      }
+    ],
+    "protocolo": "Partición 75/25 fija; cinco pliegues solo en entrenamiento. Sin ajuste de hiperparámetros ni selección por la prueba.",
+    "alcance": "Horas declaradas de uso de IA. No mide calificaciones ni efectos causales. Muestra pequeña; R² puede ser negativo."
+  },
   "clusters": {
     "estado": "ok",
     "n": 19,
@@ -445,14 +567,14 @@
     "limite": "Exploratorio; perfiles con grupo o complemento n<3 omitidos. Grupos no son diagnósticos."
   },
   "metodologia": {
-    "version": "2.0.0",
+    "version": "2.1.0",
     "semilla": 42,
     "polaridad": "Media por pregunta; lexicón contextual con negación. No validado como escala académica o clínica.",
     "faltantes": "Textos ausentes no inventados; bienestar sin encuesta = nulo; KNN solo dentro del pipeline supervisado.",
     "alcance": "Muestra encuestada, sin inferencia causal ni medición objetiva de rendimiento."
   },
   "proveniencia": {
-    "fecha": "2026-11-17T22:29:13-06:00",
+    "fecha": "2026-11-18T15:13:50-06:00",
     "fuentes": {
       "Desempeño académico por el uso de IA (Respuestas).xlsx": "c3b78b430a6677c93fb4312b89f061f991f9cbdd5497b30ab583716f9cc48f14",
       "Cuestionario_ Entorno Universitario y Bienestar.csv": "ffe2b8d0d2283a5e051c8de1bb6f256e85bcb451b8f651b6cebf70d96e879b27"

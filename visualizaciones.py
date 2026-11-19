@@ -100,3 +100,22 @@ def generar_figuras(resultado, destino: Path) -> None:
         ax.set(xticks=[0,1],yticks=[0,1],xticklabels=['Exclusiva','Mixta'],yticklabels=['Exclusiva','Mixta'],
                xlabel='Predicción',ylabel='Modalidad declarada',title=f'{s["seleccionado"]}: prueba reservada (n={s["n_test"]})')
         guardar(fig,'confusion')
+
+    g=r.get('regresion',{})
+    if g.get('estado')=='ok':
+        fig,axes=plt.subplots(1,2,figsize=(8,3.1))
+        nombres=['Lineal','Promedio']
+        valores=[m['prueba'] for m in g['modelos']]
+        for ax,clave,titulo,unidad in [(axes[0],'r2','R² en prueba reservada','R² (mayor es mejor)'),
+                                       (axes[1],'mae_h','Error absoluto medio','Horas (menor es mejor)')]:
+            ys=[m[clave] for m in valores]
+            if any(v is None for v in ys):
+                ax.text(.5,.5,'R² no definido: horas constantes',ha='center',va='center',transform=ax.transAxes)
+                continue
+            ax.bar(nombres,ys,color=[AZUL,MORADO],width=.55)
+            ax.axhline(0,color='#667788',linewidth=.8)
+            for i,v in enumerate(ys):ax.annotate(f'{v:.3f}',(i,v),xytext=(0,6 if v>=0 else -13),textcoords='offset points',ha='center',fontsize=9)
+            ax.margins(y=.3)
+            ax.set(title=titulo,ylabel=unidad)
+        fig.suptitle(f'Estimación de horas de IA: {g["n_train"]} casos de entrenamiento y {g["n_test"]} de prueba',fontsize=10)
+        guardar(fig,'regresion')

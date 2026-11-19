@@ -24,14 +24,15 @@ from sklearn.base import BaseEstimator, TransformerMixin, clone
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
-from sklearn.dummy import DummyClassifier
+from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.impute import KNNImputer
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
-                             precision_score, recall_score, silhouette_score)
-from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
+                             mean_absolute_error, precision_score, r2_score,
+                             recall_score, root_mean_squared_error, silhouette_score)
+from sklearn.model_selection import KFold, StratifiedKFold, cross_validate, train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
@@ -59,6 +60,7 @@ FEATURES_NUM = ['horas_ia_dia','semestre_inicio','total_herramientas',
                 'edad','traslado_min','score_bienestar','tiene_bienestar']
 FEATURES_CLUSTER = ['horas_ia_dia','semestre_inicio','total_herramientas',
                     'traslado_min','score_beneficio_ia','score_bienestar']
+FEATURES_REGRESION = ['semestre_inicio','total_herramientas']
 HERRAMIENTAS = {
     'chatgpt':r'\b(?:chat\s*gpt|chargpt)\b',
     'gemini':r'\bgemini\b', 'deepseek':r'\bdeepse?ek\b',
@@ -442,6 +444,61 @@ def evaluar_modelos(df: pd.DataFrame) -> dict:
             'test_sensible_pp':100/len(yte)}
 
 
+def datos_regresion(df: pd.DataFrame) -> tuple[pd.DataFrame,pd.Series]:
+    """Casos completos del objetivo y dos predictores; nunca usa textos o cuentas."""
+    columnas=FEATURES_REGRESION+['horas_ia_dia']
+    datos=df[columnas].apply(pd.to_numeric,errors='coerce').replace([np.inf,-np.inf],np.nan).dropna()
+    datos=datos.loc[datos['horas_ia_dia']>=0]
+    return datos[FEATURES_REGRESION],datos['horas_ia_dia']
+
+
+def crear_pipeline_regresion() -> Pipeline:
+    return Pipeline([('escalar',StandardScaler()),('modelo',LinearRegression())])
+
+
+def metricas_regresion(y, pred) -> dict:
+    # R² no está definido si el objetivo es constante, incluso con ajuste perfecto.
+    y=np.asarray(y,dtype=float)
+    r2=float(r2_score(y,pred,force_finite=False)) if len(y)>1 and np.ptp(y)>0 else None
+    return {'r2':r2,'mae_h':float(mean_absolute_error(y,pred)),
+            'rmse_h':float(root_mean_squared_error(y,pred))}
+
+
+def evaluar_regresion(df: pd.DataFrame) -> dict:
+    X,y=datos_regresion(df)
+    base={'n':len(y),'n_excluidos':len(df)-len(y),'objetivo':'horas_ia_dia',
+          'predictores':FEATURES_REGRESION.copy(),'semilla':42}
+    if len(y)<16 or y.nunique()<2:
+        return {**base,'estado':'insuficiente',
+                'motivo':'Se necesitan al menos 16 casos completos y variación en las horas de uso.'}
+    Xtr,Xte,ytr,yte=train_test_split(X,y,test_size=.25,random_state=42)
+    if ytr.nunique()<2:
+        return {**base,'estado':'insuficiente','motivo':'Las horas no varían en el conjunto de entrenamiento.'}
+    cv=KFold(n_splits=5,shuffle=True,random_state=42)
+    modelos=[]
+    # Ambos modelos y sus parámetros se fijan antes de consultar la prueba.
+    for nombre,estimador in [('Regresión lineal',crear_pipeline_regresion()),
+                             ('Referencia (media)',DummyRegressor(strategy='mean'))]:
+        folds=[]
+        for it,iv in cv.split(Xtr):
+            modelo=clone(estimador).fit(Xtr.iloc[it],ytr.iloc[it])
+            folds.append({'n':len(iv),**metricas_regresion(ytr.iloc[iv],modelo.predict(Xtr.iloc[iv]))})
+        validos=[f['r2'] for f in folds if f['r2'] is not None]
+        resumen_cv={'r2_media':float(np.mean(validos)) if validos else None,
+                    'r2_sd':float(np.std(validos,ddof=1)) if len(validos)>1 else None,
+                    'mae_media_h':float(np.mean([f['mae_h'] for f in folds])),
+                    'rmse_media_h':float(np.mean([f['rmse_h'] for f in folds])),
+                    'folds_r2_validos':len(validos)}
+        modelo=clone(estimador).fit(Xtr,ytr)
+        modelos.append({'modelo':nombre,'cv':resumen_cv,'folds':folds,
+                        'entrenamiento':metricas_regresion(ytr,modelo.predict(Xtr)),
+                        'prueba':metricas_regresion(yte,modelo.predict(Xte))})
+    return {**base,'estado':'ok','n_train':len(ytr),'n_test':len(yte),'n_folds':5,
+            'modelos':modelos,
+            'protocolo':'Partición 75/25 fija; cinco pliegues solo en entrenamiento. Sin ajuste de hiperparámetros ni selección por la prueba.',
+            'alcance':'Horas declaradas de uso de IA. No mide calificaciones ni efectos causales. Muestra pequeña; R² puede ser negativo.'}
+
+
 def analizar_clusters(df: pd.DataFrame) -> dict:
     reales = df.loc[df['tiene_bienestar'],FEATURES_CLUSTER].dropna()
     if len(reales)<7:
@@ -543,9 +600,10 @@ def analizar(data_dir: str | Path) -> Resultado:
     df=preparar_datos(ia,bie)
     r=resumir(df,len(bie))
     r['supervisado']=evaluar_modelos(df)
+    r['regresion']=evaluar_regresion(df)
     r['clusters']=analizar_clusters(df)
     r['metodologia']={
-        'version':'2.0.0','semilla':42,
+        'version':'2.1.0','semilla':42,
         'polaridad':'Media por pregunta; lexicón contextual con negación. No validado como escala académica o clínica.',
         'faltantes':'Textos ausentes no inventados; bienestar sin encuesta = nulo; KNN solo dentro del pipeline supervisado.',
         'alcance':'Muestra encuestada, sin inferencia causal ni medición objetiva de rendimiento.',
@@ -579,6 +637,11 @@ def exportar(resultado: Resultado, out: str | Path) -> None:
     pd.DataFrame(r['descriptivos']).T.to_csv(out/'descriptivos.csv',encoding='utf-8-sig',index_label='variable')
     if r['supervisado']['estado']=='ok':
         pd.DataFrame(r['supervisado']['cv']).drop(columns=['fold_f1']).to_csv(out/'modelos_cv.csv',index=False,encoding='utf-8-sig')
+    if r['regresion']['estado']=='ok':
+        tabla=[{'modelo':m['modelo'],'evaluacion':etapa,**metricas}
+               for m in r['regresion']['modelos']
+               for etapa,metricas in [('entrenamiento',m['entrenamiento']),('validacion_cruzada',m['cv']),('prueba',m['prueba'])]]
+        pd.DataFrame(tabla).to_csv(out/'regresion_metricas.csv',index=False,encoding='utf-8-sig')
     generar_figuras(resultado,out/'figuras')
 
 

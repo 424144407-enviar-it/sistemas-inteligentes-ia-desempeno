@@ -9,7 +9,7 @@ import streamlit as st
 
 from dashboard_datos import (NOMBRES_HERRAMIENTAS, NOMBRES_VARIABLES,
                              documentos_publicos, leer_resumen,
-                             tabla_herramientas, tabla_modalidades)
+                             tabla_herramientas, tabla_modalidades, tabla_regresion)
 
 ROOT=Path(__file__).resolve().parent
 RESUMEN=ROOT/'resultados'/'resumen.json'
@@ -217,25 +217,72 @@ def entorno(r):
         st.dataframe(pd.DataFrame(filas).rename(columns={'n':'Respuestas','media':'Media léxica','n_score_cero':'Puntuaciones en cero'}),hide_index=True,width='stretch')
 
 
+def regresion(r):
+    g=r['regresion']
+    if g['estado']!='ok':
+        st.info('No hay suficientes casos completos o variación en las horas para evaluar la regresión.')
+        return
+    lineal=next(m for m in g['modelos'] if m['modelo']=='Regresión lineal')
+    referencia=next(m for m in g['modelos'] if m['modelo']=='Referencia (media)')
+    t=lineal['prueba'];b=referencia['prueba']
+    fmt=lambda v:'No definido' if v is None else f'{v:.3f}'
+    seccion('¿Podemos estimar las horas de uso de IA?',
+            'La regresión lineal usa el semestre en que se empezó a utilizar IA y la cantidad de herramientas mencionadas. Las horas son declaradas por quienes respondieron.')
+    metricas([('R² de prueba',fmt(t['r2']),'','Puede ser negativo'),
+              ('Error absoluto medio (MAE)',f'{t["mae_h"]:.2f}','horas',f'Unos {60*t["mae_h"]:.0f} minutos de error medio'),
+              ('Raíz del error cuadrático (RMSE)',f'{t["rmse_h"]:.2f}','horas','Da más peso a los errores grandes'),
+              ('Casos reservados para prueba',str(g['n_test']),'casos',f'{g["n_train"]} casos para entrenamiento')])
+    with st.container(border=True,key='panel_regresion_prueba'):
+        seccion('Comparación en las mismas respuestas de prueba',
+                'La referencia predice siempre el promedio de horas del conjunto de entrenamiento. Ninguno de los dos modelos se eligió a partir de esta prueba.')
+        tabla=tabla_regresion(r)
+        st.dataframe(tabla,hide_index=True,width='stretch',column_config={c:st.column_config.NumberColumn(format='%.3f') for c in ['R²','MAE (horas)','RMSE (horas)']})
+        medida=st.segmented_control('Métrica de regresión',['R²','MAE (horas)','RMSE (horas)'],default='R²',required=True,key='metrica_regresion')
+        d=tabla[['Modelo',medida]].rename(columns={medida:'Valor'}).dropna()
+        if not d.empty:
+            base=alt.Chart(d).encode(y=alt.Y('Modelo:N',title=None),x=alt.X('Valor:Q',title=medida),tooltip=['Modelo',alt.Tooltip('Valor:Q',format='.3f',title=medida)])
+            barras=base.mark_bar(cornerRadiusEnd=4,size=30).encode(color=alt.Color('Modelo:N',scale=alt.Scale(domain=['Regresión lineal','Referencia (media)'],range=[AZUL,ORO]),legend=None))
+            cero=alt.Chart(pd.DataFrame({'Cero':[0]})).mark_rule(color='#8293A5').encode(x='Cero:Q')
+            grafica((barras+cero).properties(height=170),'chart_regresion','Comparación agregada de regresión y referencia. Los R² negativos se muestran sin recortarlos.')
+        if t['mae_h']>=b['mae_h']:
+            mensaje('El promedio fue una mejor referencia por error medio.',
+                    f'La regresión se desvió {t["mae_h"]:.2f} horas en promedio, frente a {b["mae_h"]:.2f} de la referencia. Estas dos variables aportaron poca capacidad predictiva en los {g["n_test"]} casos de prueba.')
+        else:
+            mensaje('La regresión redujo el error medio en esta prueba.',
+                    'Es una comparación exploratoria con pocos casos. Hace falta comprobar si se mantiene con otras respuestas.')
+    with st.expander('Cómo interpretar R², MAE y RMSE',expanded=True):
+        st.write('R² compara el error cuadrático del modelo con la variación de las horas observadas en el conjunto evaluado. Un 1 indica ajuste perfecto; 0 equivale a usar la media de ese conjunto y un valor negativo indica mayor error que esa referencia matemática.')
+        st.write('La referencia de la tabla usa la media de entrenamiento, por eso su R² de prueba también puede ser negativo. Un R² de −0.245 no significa “−24.5 % de precisión”. Si las horas evaluadas son constantes, R² se muestra como no definido.')
+        st.write('MAE indica cuánto se desvían las predicciones en promedio, en horas. RMSE también se expresa en horas, pero penaliza más las equivocaciones grandes. Un error medio no garantiza ese margen para cada persona.')
+    with st.expander('Validación, partición y límites del ejercicio'):
+        cv=pd.DataFrame([{'Modelo':m['modelo'],'R² CV medio':m['cv']['r2_media'],'DE de R²':m['cv']['r2_sd'],
+                          'MAE CV (horas)':m['cv']['mae_media_h'],'RMSE CV (horas)':m['cv']['rmse_media_h'],
+                          'Pliegues R² válidos':f'{m["cv"]["folds_r2_validos"]}/{g["n_folds"]}'} for m in g['modelos']])
+        st.dataframe(cv.round(3),hide_index=True,width='stretch')
+        st.write(f'Se usaron {g["n"]} casos completos y se excluyeron {g["n_excluidos"]}. La partición 75/25 y los cinco pliegues se fijaron con semilla 42. La escala se aprende en cada entrenamiento; la prueba se mantiene fuera de la validación.')
+        st.write('R² se calcula por pliegue y después se resume. Con tres o cuatro respuestas por pliegue puede variar mucho: si las horas son parecidas, incluso un error pequeño pesa bastante. La desviación entre pliegues no es un intervalo de confianza. Se omite del promedio cualquier R² no definido y se conserva ese dato en las tablas del análisis.')
+        st.write('Este ejercicio estudia intensidad de uso de IA. Para evaluar desempeño académico harían falta calificaciones numéricas independientes. No se ajustaron parámetros ni se cambiaron las particiones buscando un R² favorable.')
+    st.download_button('Descargar métricas de regresión (CSV)',tabla.to_csv(index=False).encode('utf-8-sig'),file_name='regresion_prueba_agregada.csv',mime='text/csv')
+
+
 def modelos(r):
     s=r['supervisado'];c=r['clusters']
     titulo('EVALUACIÓN EXPLORATORIA','Qué muestran\nlos modelos.',
-           'Aquí se compara qué tan bien los modelos distinguen el uso mixto del uso solo como guía o atajo. El experimento no predice calificaciones ni hace diagnósticos sobre estudiantes.')
-    if s['estado']=='ok':
-        metricas([('Respuestas que se pudieron clasificar',str(s['n_etiquetados']),'casos',f'{s["n_excluidos"]} respuestas ambiguas fuera del modelo'),
-                  ('Entrenamiento',str(s['n_train']),'casos','Selección y validación cruzada'),
-                  ('Prueba reservada',str(s['n_test']),'casos','Se revisa después de elegir el modelo'),
-                  ('Validación estratificada',str(s['n_folds']),'folds','Transformaciones ajustadas en cada fold')])
-        if not s['supera_baseline_cv']:
-            mensaje('La referencia sencilla obtuvo un mejor F1.',
-                    'Predecir siempre la categoría más frecuente dio mejor F1 en validación que los modelos entrenados. Por eso estos resultados sirven para comparar métodos, no para decidir sobre estudiantes.')
-        else:
-            mensaje('Hace falta probarlo con más datos.','Un F1 mayor en esta evaluación no garantiza que el modelo funcione igual con otros estudiantes.')
-    tabs=st.tabs(['Clasificación','Agrupación exploratoria'])
+           'Comparamos tres ejercicios: distinguir modalidades de uso, estimar horas de IA y explorar agrupaciones. Cada uno responde una pregunta distinta y usa sus propias métricas.')
+    tabs=st.tabs(['Clasificación','Regresión (R²)','Agrupación exploratoria'])
     with tabs[0]:
         if s['estado']!='ok':
             st.info('No hay suficientes respuestas para evaluar la clasificación. Puedes consultar la agrupación en la otra pestaña.')
         else:
+            metricas([('Respuestas que se pudieron clasificar',str(s['n_etiquetados']),'casos',f'{s["n_excluidos"]} respuestas ambiguas fuera del modelo'),
+                      ('Entrenamiento',str(s['n_train']),'casos','Selección y validación cruzada'),
+                      ('Prueba reservada',str(s['n_test']),'casos','Se revisa después de elegir el modelo'),
+                      ('Validación estratificada',str(s['n_folds']),'pliegues','Cada pliegue aprende sus transformaciones')])
+            if not s['supera_baseline_cv']:
+                mensaje('La referencia sencilla obtuvo un mejor F1.',
+                        'Predecir siempre la categoría más frecuente dio mejor F1 en validación que los modelos entrenados. Estos resultados ayudan a comparar métodos, pero no respaldan decisiones sobre estudiantes.')
+            else:
+                mensaje('Hace falta probarlo con más datos.','Un F1 mayor en esta evaluación no garantiza que el modelo funcione igual con otros estudiantes.')
             with st.container(border=True,key='panel_modelos_cv'):
                 seccion('Cómo les fue al clasificar las respuestas','La etiqueta distingue uso mixto (1) de uso declarado solo como guía o atajo (0). La respuesta que define esa etiqueta no se usa para predecirla.')
                 st.html(f'<div class="pasos"><span class="paso"><b>{s["n_train"]}</b> entrenamiento</span><span class="paso">CV de <b>{s["n_folds"]}</b> folds</span><span class="paso">Selección por <b>F1</b></span><span class="paso"><b>{s["n_test"]}</b> prueba</span></div>')
@@ -267,6 +314,8 @@ def modelos(r):
                 st.dataframe(tabla.round(3),hide_index=True,width='stretch')
                 st.write('Escala e imputación KNN, vectorización TF-IDF y PCA se ajustan únicamente en entrenamiento dentro de cada fold. No se usa la prueba para seleccionar el candidato. La tarea es clasificar una modalidad declarada, no medir aprendizaje efectivo.')
     with tabs[1]:
+        regresion(r)
+    with tabs[2]:
         if c['estado']!='ok':st.info('No hay suficientes observaciones para explorar agrupaciones.')
         else:
             st.write('')

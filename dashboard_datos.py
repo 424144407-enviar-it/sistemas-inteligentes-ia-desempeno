@@ -81,6 +81,43 @@ def _supervisado(obj):
     return r
 
 
+def _metricas_regresion(obj):
+    r=_numeros(obj,('r2','mae_h','rmse_h'),nulos=True)
+    if r['r2'] is not None and r['r2']>1+1e-10:raise ValueError
+    if any(r[k] is None or r[k]<0 for k in ('mae_h','rmse_h')):raise ValueError
+    return r
+
+
+def _regresion(obj):
+    if obj['estado']=='insuficiente':return {'estado':'insuficiente'}
+    if obj['estado']!='ok':raise ValueError
+    claves=('n','n_excluidos','n_train','n_test','n_folds')
+    r=_numeros(obj,claves,enteros=claves)
+    if r['n_train']+r['n_test']!=r['n'] or r['n_test']<2 or r['n_folds']<2:raise ValueError
+    modelos=[]
+    for m in obj['modelos']:
+        if m['modelo'] not in ('Regresión lineal','Referencia (media)'):raise ValueError
+        cv=_numeros(m['cv'],('r2_media','r2_sd','mae_media_h','rmse_media_h','folds_r2_validos'),enteros=('folds_r2_validos',),nulos=True)
+        if (cv['r2_media'] is not None and cv['r2_media']>1+1e-10 or
+            cv['r2_sd'] is not None and cv['r2_sd']<0 or
+            any(cv[k] is None or cv[k]<0 for k in ('mae_media_h','rmse_media_h'))):raise ValueError
+        folds=[{**_numeros(f,('n',),enteros=('n',)),**_metricas_regresion(f)} for f in m['folds']]
+        if (len(folds)!=r['n_folds'] or sum(f['n'] for f in folds)!=r['n_train'] or
+            any(f['n']<2 for f in folds) or cv['folds_r2_validos']!=sum(f['r2'] is not None for f in folds)):
+            raise ValueError
+        modelos.append({'modelo':m['modelo'],'cv':cv,'folds':folds,
+                        'entrenamiento':_metricas_regresion(m['entrenamiento']),
+                        'prueba':_metricas_regresion(m['prueba'])})
+    if len(modelos)!=2 or {m['modelo'] for m in modelos}!={'Regresión lineal','Referencia (media)'}:raise ValueError
+    return {**r,'estado':'ok','modelos':modelos}
+
+
+def tabla_regresion(r:dict)->pd.DataFrame:
+    return pd.DataFrame([{'Modelo':m['modelo'],'R²':m['prueba']['r2'],
+                          'MAE (horas)':m['prueba']['mae_h'],'RMSE (horas)':m['prueba']['rmse_h']}
+                         for m in r['regresion']['modelos']])
+
+
 def _clusters(obj):
     if obj['estado']=='insuficiente':return {'estado':'insuficiente'}
     if obj['estado']!='ok':raise ValueError
@@ -105,7 +142,7 @@ def leer_resumen(ruta:Path) -> dict:
         raise ValueError('El archivo de resultados no es un JSON válido.') from None
     _validar_privacidad(r)
     necesarias={'muestra','kpis','descriptivos','herramientas','tipo_uso','reemplazo',
-                'supervisado','clusters','proveniencia','metodologia','calidad',
+                'supervisado','regresion','clusters','proveniencia','metodologia','calidad',
                 'correlacion_traslado_ia','correlacion_spearman','tfidf_top','semestre_inicio'}
     if not isinstance(r,dict) or not necesarias.issubset(r):
         raise ValueError('El resumen está incompleto. Regénere los resultados con la versión corregida.')
@@ -135,6 +172,8 @@ def leer_resumen(ruta:Path) -> dict:
             limpio[campo]=_numeros({k:r[campo].get(k,0) for k in permitidos},tuple(permitidos),enteros=tuple(permitidos))
         if sum(limpio['tipo_uso'].values())!=m['ia'] or sum(limpio['reemplazo'].values())!=m['ia']:raise ValueError
         limpio['supervisado']=_supervisado(r['supervisado']);limpio['clusters']=_clusters(r['clusters'])
+        limpio['regresion']=_regresion(r['regresion'])
+        if limpio['regresion']['estado']=='ok' and limpio['regresion']['n']+limpio['regresion']['n_excluidos']!=m['ia']:raise ValueError
         limpio['correlacion_traslado_ia']=_numeros(r['correlacion_traslado_ia'],('n','rho','p'),enteros=('n',),nulos=True)
         limpio['correlacion_spearman']={x:_numeros(r['correlacion_spearman'][x],tuple(NOMBRES_VARIABLES),nulos=True) for x in NOMBRES_VARIABLES}
         limpio['tfidf_top']={k:v for k,v in r['tfidf_top'].items() if re.fullmatch(r'[a-z ]{1,64}',k) and type(v) in (int,float) and math.isfinite(v) and 0<=v<=1}
