@@ -10,9 +10,9 @@ import streamlit as st
 
 import dashboard_datos
 
-# Una sesión activa puede conservar el adaptador de antes de la actualización.
-# Se recarga una sola vez si todavía no expone la nueva tabla de regresión.
-if not hasattr(dashboard_datos,'tabla_regresion'):
+# Una sesión activa puede conservar un adaptador anterior al contrato actual
+# de resultados y documentos. Se recarga una vez cuando cambia ese contrato.
+if getattr(dashboard_datos,'VERSION_ADAPTADOR',0)!=2:
     reload(dashboard_datos)
 
 from dashboard_datos import (NOMBRES_HERRAMIENTAS, NOMBRES_VARIABLES,

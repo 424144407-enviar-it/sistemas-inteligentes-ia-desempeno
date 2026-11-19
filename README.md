@@ -107,13 +107,13 @@ Los controles permiten explorar los agregados disponibles. Los porcentajes de he
 
 La documentación del proyecto se encuentra en:
 
-- [Informe técnico](docs/actualizados/DOCUMENTACION_TECNICA_SI_C_CORREGIDA.pdf).
-- [Informe de negocio](docs/actualizados/DOCUMENTACION_NEGOCIO_SI_C_CORREGIDA.pdf).
+- [Informe técnico](docs/DOCUMENTACION_TECNICA.pdf).
+- [Informe de negocio](docs/DOCUMENTACION_NEGOCIO.pdf).
 - [Metodología y alcance](docs/METODOLOGIA.md).
 - [Guía para interpretar los resultados](docs/INTERPRETACION.md).
-- [Verificación de la entrega](docs/VERIFICACION_ENTREGA.md).
+- [Verificación de la entrega](tests/VERIFICACION.md).
 
-Los dos PDF conservan las portadas originales y el estilo de los documentos de referencia. El notebook, el tablero y los informes comparten los resultados de `resultados/resumen.json`.
+Los dos PDF son los informes definitivos del proyecto y conservan las portadas y el estilo de los documentos de referencia. Toda la documentación se encuentra directamente en [docs/](docs/), con un índice para consultarla. El notebook, el tablero y los informes comparten los resultados de `resultados/resumen.json`.
 
 ## Alcance y conclusiones
 

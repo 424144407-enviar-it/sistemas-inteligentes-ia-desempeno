@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
+VERSION_ADAPTADOR=2
+
 NOMBRES_HERRAMIENTAS={'gemini':'Gemini','chatgpt':'ChatGPT','claude':'Claude',
                      'deepseek':'DeepSeek','copilot':'Copilot','notebooklm':'NotebookLM',
                      'qwen':'Qwen','perplexity':'Perplexity'}
@@ -145,7 +147,7 @@ def leer_resumen(ruta:Path) -> dict:
                 'supervisado','regresion','clusters','proveniencia','metodologia','calidad',
                 'correlacion_traslado_ia','correlacion_spearman','tfidf_top','semestre_inicio'}
     if not isinstance(r,dict) or not necesarias.issubset(r):
-        raise ValueError('El resumen está incompleto. Regénere los resultados con la versión corregida.')
+        raise ValueError('El resumen está incompleto. Regenera los resultados con el análisis del proyecto.')
     m=r['muestra']
     try:
         if (not isinstance(m['ia'],int) or m['ia']<=0 or m['emparejados']<0 or
@@ -206,6 +208,6 @@ def tabla_modalidades(r:dict)->pd.DataFrame:
 
 
 def documentos_publicos(root:Path)->dict[str,Path]:
-    base=Path(root)/'docs'/'actualizados'
-    return {'tecnica':base/'DOCUMENTACION_TECNICA_SI_C_CORREGIDA.pdf',
-            'negocio':base/'DOCUMENTACION_NEGOCIO_SI_C_CORREGIDA.pdf'}
+    base=Path(root)/'docs'
+    return {'tecnica':base/'DOCUMENTACION_TECNICA.pdf',
+            'negocio':base/'DOCUMENTACION_NEGOCIO.pdf'}

@@ -367,17 +367,17 @@ def main():
     root=Path(__file__).parent
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--resultados',type=Path,default=root/'resultados')
-    p.add_argument('--referencias',type=Path,default=root/'docs'/'originales')
-    p.add_argument('--out',type=Path,default=root/'docs'/'actualizados')
+    p.add_argument('--referencias',type=Path,default=root/'data'/'referencias')
+    p.add_argument('--out',type=Path,default=root/'docs')
     args=p.parse_args()
     r=json.loads((args.resultados/'resumen.json').read_text(encoding='utf-8'))
     if any(r[k]['estado']!='ok' for k in ['supervisado','regresion','clusters']):
         p.error('El informe requiere resultados completos; revise las limitaciones de muestra.')
     informe=Informe(r,args.resultados/'figuras')
     construir(informe.tecnica(),args.referencias/'DOCUMENTACION TECNICA SI_C.pdf',
-              args.out/'DOCUMENTACION_TECNICA_SI_C_CORREGIDA.pdf',r,'Documentación técnica')
+              args.out/'DOCUMENTACION_TECNICA.pdf',r,'Documentación técnica')
     construir(informe.negocio(),args.referencias/'DOCUMENTACIÓN NEGOCIO SI_C.pdf',
-              args.out/'DOCUMENTACION_NEGOCIO_SI_C_CORREGIDA.pdf',r,'Documentación de negocio')
+              args.out/'DOCUMENTACION_NEGOCIO.pdf',r,'Documentación de negocio')
     print('Se generaron dos PDF nuevos con las portadas originales.')
 
 

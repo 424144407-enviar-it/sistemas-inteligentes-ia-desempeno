@@ -84,6 +84,7 @@ class DashboardAppTest(unittest.TestCase):
         import dashboard_datos
         anterior=types.ModuleType('dashboard_datos')
         anterior.__dict__.update(dashboard_datos.__dict__)
+        anterior.VERSION_ADAPTADOR=1
         del anterior.tabla_regresion
         st.cache_data.clear()
         try:

@@ -57,12 +57,14 @@ class DashboardDatosTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'muestra'):
                 a.leer_resumen(p)
 
-    def test_documentos_solo_devuelve_archivos_corregidos(self):
+    def test_documentos_devuelve_informes_definitivos(self):
         a=self.api()
         docs=a.documentos_publicos(ROOT)
         self.assertEqual(set(docs),{'tecnica','negocio'})
+        self.assertEqual({p.name for p in docs.values()},{'DOCUMENTACION_TECNICA.pdf','DOCUMENTACION_NEGOCIO.pdf'})
         for p in docs.values():
-            self.assertIn('actualizados',p.parts)
+            self.assertEqual(p.parent,ROOT/'docs')
+            self.assertNotIn('CORREGIDA',p.name)
             self.assertTrue(p.read_bytes().startswith(b'%PDF'))
 
     def test_resumen_incompleto_falla_con_mensaje(self):

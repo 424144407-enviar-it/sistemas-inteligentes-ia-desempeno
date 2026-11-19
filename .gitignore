@@ -11,12 +11,6 @@ venv/
 *.log
 data/private/*
 !data/private/.gitkeep
-docs/originales/*
-!docs/originales/.gitkeep
+data/referencias/
 .DS_Store
 Thumbs.db
-
-# Notas internas de trabajo; la entrega pública está documentada en docs/.
-docs/superpowers/
-docs/DASHBOARD.md
-docs/VALIDACION.md

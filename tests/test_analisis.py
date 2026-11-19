@@ -8,7 +8,7 @@ import pandas as pd
 
 class CorreccionesTest(unittest.TestCase):
     def api(self):
-        self.assertIsNotNone(importlib.util.find_spec('analisis'), 'Falta el módulo corregido')
+        self.assertIsNotNone(importlib.util.find_spec('analisis'), 'Falta el módulo de análisis')
         import analisis
         return analisis
 

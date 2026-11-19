@@ -44,6 +44,6 @@ K-Means y clustering jerárquico usan variables estandarizadas de los 19 registr
 
 ## Reproducibilidad y lectura
 
-La metodología corresponde a la versión 2.1.0. `resultados/resumen.json` registra semilla, versiones y hashes de las fuentes. El notebook, las figuras, el tablero y los PDF usan el mismo análisis. Las encuestas y los PDF originales se necesitan solo para recalcular o regenerar los informes.
+La metodología corresponde a la versión 2.1.0. `resultados/resumen.json` registra semilla, versiones y hashes de las fuentes. El notebook, las figuras, el tablero y los PDF usan el mismo análisis. Las encuestas y las portadas de referencia locales se necesitan solo para recalcular o regenerar los informes. Las portadas se conservan en `data/referencias/`, fuera de la documentación de entrega y excluidas de Git.
 
 La [guía de interpretación](INTERPRETACION.md) explica las métricas con los resultados de esta ejecución. Las definiciones técnicas pueden consultarse en la documentación de scikit-learn sobre [R²](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html), [referencia del promedio](https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyRegressor.html) y [evaluación de modelos](https://scikit-learn.org/stable/modules/model_evaluation.html).
