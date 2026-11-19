@@ -2,10 +2,18 @@
 from datetime import date
 from html import escape
 from pathlib import Path
+from importlib import reload
 
 import altair as alt
 import pandas as pd
 import streamlit as st
+
+import dashboard_datos
+
+# Una sesión activa puede conservar el adaptador de antes de la actualización.
+# Se recarga una sola vez si todavía no expone la nueva tabla de regresión.
+if not hasattr(dashboard_datos,'tabla_regresion'):
+    reload(dashboard_datos)
 
 from dashboard_datos import (NOMBRES_HERRAMIENTAS, NOMBRES_VARIABLES,
                              documentos_publicos, leer_resumen,

@@ -77,5 +77,23 @@ class DashboardAppTest(unittest.TestCase):
                 self.assertTrue(any('horas' in x.value for x in at.info))
         finally:st.cache_data.clear()
 
+    def test_actualizacion_recarga_adaptador_anterior_sin_funcion_nueva(self):
+        import sys
+        import types
+        import streamlit as st
+        import dashboard_datos
+        anterior=types.ModuleType('dashboard_datos')
+        anterior.__dict__.update(dashboard_datos.__dict__)
+        del anterior.tabla_regresion
+        st.cache_data.clear()
+        try:
+            with patch.dict(sys.modules,{'dashboard_datos':anterior}):
+                at=AppTest.from_file(str(ROOT/'dashboard.py'),default_timeout=30).run()
+                self.assertEqual(len(at.exception),0)
+                at.radio(key='vista').set_value('Modelos').run()
+                self.assertEqual(len(at.exception),0)
+                self.assertIn('Regresión (R²)',[t.label for t in at.tabs])
+        finally:st.cache_data.clear()
+
 
 if __name__=='__main__':unittest.main()

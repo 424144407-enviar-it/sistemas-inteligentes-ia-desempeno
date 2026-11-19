@@ -6,9 +6,10 @@
 
 - Se creó un entorno Python 3.12 nuevo, sin reutilizar las bibliotecas del equipo.
 - Con solo `requirements.txt`, pasaron las 11 pruebas del dashboard: cinco vistas, controles, descargas y estados de datos incompletos. scikit-learn no estaba instalado en ese entorno mínimo.
-- En la actualización de metodología 2.1.0 pasaron las 33 pruebas de la entrega: 12 del análisis, 14 del tablero y su adaptador de datos, y siete de regresión e interpretación de informes.
+- En la actualización de metodología 2.1.0 pasaron las 34 pruebas de la entrega: 12 del análisis, 15 del tablero y su adaptador de datos, y siete de regresión e interpretación de informes.
 - Las pruebas de regresión comprueban la separación del objetivo, la referencia del promedio de entrenamiento, la partición reproducible, los R² negativos o no definidos y la exclusión de campos individuales.
 - También se comprobó que las conclusiones y los tamaños de partición cambien al recalcular con datos sintéticos, y que se informe cuántos pliegues aportan un R² definido.
+- Se reprodujo el arranque con una versión anterior del adaptador todavía importada en memoria. El tablero recarga ese módulo si falta la nueva tabla de regresión, para recuperar la sesión durante la actualización.
 - El notebook se ejecutó de principio a fin sin errores y sus salidas se comprobaron contra los identificadores reales de las fuentes, sin publicarlos.
 - El arranque del dashboard no requiere encuestas privadas, PDF originales o entrenamiento de modelos.
 - Se mantuvieron las mismas rutas, datos agregados y PDF corregidos que usa la versión revisada.
